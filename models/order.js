@@ -1,25 +1,29 @@
 const { Schema, model, Types } = require('mongoose');
 
 const schema = new Schema({
-  number: {
-    type: String,
-    required: true,
-  },
   drink: {
     type: String,
     required: true,
   },
   size: {
-    type: Number,
+    type: String,
     required: true,
   },
   additives: {
     type: Array,
     default: null,
   },
+  price: {
+    type: Number,
+    required: true,
+  },
   isFree: {
     type: Boolean,
     default: false,
+  },
+  userId: {
+    type: Number,
+    default: null,
   },
   data: {
     type: Date,

@@ -1,32 +1,38 @@
+require('dotenv').config();
+
 const mongoose = require('mongoose');
 
 const { Telegraf } = require('telegraf');
 const session = require('telegraf/session');
 const Stage = require('telegraf/stage');
 
-const main = require('./scenes/main');
+const admin = require('./scenes/admin');
+const qrcode = require('./scenes/qrcode');
+const user = require('./scenes/user');
 
-//const stats = require('./scenes/stats');
+const stats = require('./scenes/stats');
 
-//const createOrder = require('./scenes/createOrder');
+const createOrder = require('./scenes/createOrder');
 
-const addScene = require('./scenes/add/addScene');
-const addDrink = require('./scenes/add/addDrink');
+const addScene = require('./scenes/add');
+const addCup = require('./scenes/add/addCup');
 const addStock = require('./scenes/add/addStock');
-const addAdditive = require('./scenes/add/addAdditive');
+const addDrink = require('./scenes/add/addDrink');
+const addCategory = require('./scenes/add/addCategory');
 
-//const editDrink = require('./scenes/edit/editDrink');
-//const editStock = require('./scenes/edit/editStock');
-//const editAdditive = require('./scenes/edit/editAdditive');
+const editScene = require('./scenes/edit');
 
-//const deleteDrink = require('./scenes/delete/deleteDrink');
-//const deleteStock = require('./scenes/delete/deleteStock');
-//const deleteAdditive = require('./scenes/delete/deleteAdditive');
+const deleteScene = require('./scenes/delete');
+const deleteDrink = require('./scenes/delete/deleteDrink');
+const deleteStock = require('./scenes/delete/deleteStock');
+const deleteCategory = require('./scenes/delete/deleteCategory');
 
-const mongoUrl =
-  'mongodb+srv://s1rozha:TF7GRgWkj5ZljaBJ@cluster0-p8rqe.mongodb.net/pandaria?retryWrites=true&w=majority';
+const MONGODB_URL = process.env.MONGODB_URL;
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 
-mongoose.connect(mongoUrl, {
+const admins = [158742819, 286345380, 373648962, 286139810];
+
+mongoose.connect(MONGODB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
@@ -35,29 +41,38 @@ mongoose.connect(mongoUrl, {
 mongoose.connection.once('open', () => {
   console.log('Mongoose Connected');
 
-  const bot = new Telegraf('1217247332:AAGtm5M8rFCuX-r2bxJP9wtunOigNzfBsHw');
+  const bot = new Telegraf(TELEGRAM_TOKEN);
   const stage = new Stage([
-    main,
-    // stats,
-    // createOrder,
+    user,
+    admin,
+    qrcode,
+    stats,
+    addCup,
     addScene,
     addStock,
     addDrink,
-    addAdditive,
-    // editScene,
-    // editDrink,
-    // editStock,
-    // editAdditive,
-    // deleteScene,
-    // deleteDrink,
-    // deleteStock,
-    // deleteAdditive,
+    addCategory,
+    createOrder,
+    editScene,
+    deleteScene,
+    deleteDrink,
+    deleteStock,
+    deleteCategory,
   ]);
 
   bot.use(session());
   bot.use(stage.middleware());
 
-  bot.start((ctx) => ctx.scene.enter('main'));
+  bot.start(async (ctx) => {
+    let userId = ctx.message.from.id;
+    let admin = admins.includes(userId);
+
+    if (admin && !ctx.startPayload) return ctx.scene.enter('admin');
+    if (admin && ctx.startPayload) return ctx.scene.enter('qrcode');
+
+    ctx.scene.enter('user');
+  });
+
   bot.launch();
 });
 

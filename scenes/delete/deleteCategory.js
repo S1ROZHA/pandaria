@@ -7,23 +7,23 @@ const { enter } = Stage;
 
 const { log } = require('telegraf/composer');
 
-const Stock = require('../../models/stock');
+const Category = require('../../models/category');
 
 const stepHandler = new Composer();
 
-const getStockKeyboard = (stock) => {
+const getCategoryKeyboard = (stock) => {
   return Markup.keyboard([...stock.map((stock) => stock.name), 'Отмена'])
     .oneTime()
     .resize()
     .extra();
 };
 
-const deleteStock = new WizardScene(
-  'deleteStock',
+const deleteCategory = new WizardScene(
+  'deleteCategory',
   stepHandler,
   async (ctx) => {
-    const stock = await Stock.find();
-    ctx.replyWithMarkdown('Выбери ингредиент который нужно удалить.', getStockKeyboard(stock));
+    const category = await Category.find();
+    ctx.replyWithMarkdown('Выбери категорию которую нужно удалить.', getCategoryKeyboard(category));
 
     ctx.wizard.next();
   },
@@ -32,16 +32,16 @@ const deleteStock = new WizardScene(
     const { state } = ctx.scene.session;
     state.name = ctx.message.text;
 
-    await Stock.deleteOne({ name: state.name });
+    await Category.deleteOne({ name: state.name });
 
-    ctx.reply(`Удалён ингредиент ${state.name}`);
+    ctx.reply(`Удалёна категория ${state.name}`);
 
     await ctx.scene.enter('admin');
   },
 );
 
-deleteStock.hears(/Отмена/, async (ctx) => {
+deleteCategory.hears(/Отмена/, async (ctx) => {
   await ctx.scene.enter('admin');
 });
 
-module.exports = deleteStock;
+module.exports = deleteCategory;

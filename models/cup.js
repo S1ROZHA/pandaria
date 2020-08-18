@@ -1,22 +1,15 @@
 const { Schema, model, Types } = require('mongoose');
 
 const schema = new Schema({
-  name: {
+  size: {
     type: String,
-    required: true,
-  },
-  portion: {
-    type: Number,
-    required: true,
-  },
-  price: {
-    type: Number,
     required: true,
   },
   count: {
     type: Number,
+    default: 0,
     required: true,
   },
 });
 
-module.exports = model('Stock', schema, 'stocks');
+module.exports = model('Cup', schema, 'cups');

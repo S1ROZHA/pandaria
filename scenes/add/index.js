@@ -8,7 +8,7 @@ const { enter } = Stage;
 
 const stepHandler = new Composer();
 
-const addKeyboard = Markup.keyboard([['Склад', 'Добавки', 'Напитки']])
+const addKeyboard = Markup.keyboard([['Склад', 'Напиток', 'Категорию', 'Стаканчик'], ['Отмена']])
   .oneTime()
   .resize()
   .extra();
@@ -26,14 +26,22 @@ const addScene = new WizardScene(
       ctx.scene.enter('addStock');
     }),
 
-    Composer.hears(/Добавки/, stepHandler, (ctx) => {
-      ctx.scene.enter('addAdditive');
+    Composer.hears(/Напиток/, stepHandler, (ctx) => {
+      ctx.scene.enter('addDrink');
     }),
 
-    Composer.hears(/Напитки/, stepHandler, (ctx) => {
-      ctx.scene.enter('addDrink');
+    Composer.hears(/Категорию/, stepHandler, (ctx) => {
+      ctx.scene.enter('addCategory');
+    }),
+
+    Composer.hears(/Стаканчик/, stepHandler, (ctx) => {
+      ctx.scene.enter('addCup');
     }),
   ),
 );
+
+addScene.hears(/Отмена/, async (ctx) => {
+  await ctx.scene.enter('admin');
+});
 
 module.exports = addScene;

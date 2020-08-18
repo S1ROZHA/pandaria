@@ -5,40 +5,21 @@ const schema = new Schema({
     type: String,
     required: true,
   },
-  size: {
-    s: {
-      recipe: {
-        type: Array,
-      },
-      price: {
-        type: Number,
-        required: true,
-      },
-      default: null,
-      required: false,
-    },
-    m: {
-      recipe: {
-        type: Array,
-      },
-      price: {
-        type: Number,
-        required: true,
-      },
-      default: null,
-      required: false,
-    },
-    l: {
-      recipe: {
-        type: Array,
-      },
-      price: {
-        type: Number,
-        required: true,
-      },
-    },
-    default: null,
-    required: false,
+  category: {
+    type: String,
+    required: true,
+  },
+  cup: {
+    type: String,
+    required: true,
+  },
+  ingredients: {
+    type: Array,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
   },
 });
 
